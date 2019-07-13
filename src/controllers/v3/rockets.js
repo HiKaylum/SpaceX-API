@@ -1,21 +1,24 @@
 
-const limit = require('../../builders/limit');
-const project = require('../../builders/project');
+const limit = require('../../lib/query-builder/v3/limit');
+const offset = require('../../lib/query-builder/v3/offset');
+const project = require('../../lib/query-builder/v3/project');
 
 module.exports = {
 
   /**
    * Returns all rocket info
    */
-  all: async ctx => {
+  all: async (ctx) => {
     const data = await global.db
       .collection('rocket')
       .find({})
       .project(project(ctx.request.query))
       .sort({ first_flight: 1 })
-      .limit(limit(ctx.request.query))
-      .toArray();
-    data.forEach(rocket => {
+      .skip(offset(ctx.request.query))
+      .limit(limit(ctx.request.query));
+    ctx.state.data = data;
+    const res = await data.toArray();
+    res.forEach((rocket) => {
       rocket.rocket_id = rocket.id;
       rocket.id = rocket.rocketid;
       rocket.rocket_name = rocket.name;
@@ -24,17 +27,18 @@ module.exports = {
       delete rocket.name;
       delete rocket.type;
     });
-    ctx.body = data;
+    ctx.body = res;
   },
 
   /**
    * Returns specific rocket info
    */
-  specific: async ctx => {
+  specific: async (ctx) => {
     const data = await global.db
       .collection('rocket')
       .find({ id: ctx.params.rocket })
       .project(project(ctx.request.query))
+      .limit(1)
       .toArray();
     if (data.length === 0) {
       ctx.throw(404);
@@ -46,7 +50,7 @@ module.exports = {
     delete data[0].rocketid;
     delete data[0].name;
     delete data[0].type;
-    ctx.body = data[0];
+    [ctx.body] = data;
   },
 
 };

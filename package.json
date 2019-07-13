@@ -1,16 +1,23 @@
 {
   "name": "spacex-api",
-  "version": "2.8.0",
+  "version": "3.1.0",
   "description": "Open Source REST API for rocket, core, capsule, pad, and launch data",
   "main": "./src/app.js",
   "scripts": {
-    "test": "yarn lint && NODE_ENV=test PORT=0 jest --silent --verbose",
+    "test": "eslint . && NODE_ENV=test PORT=0 jest --silent --verbose",
     "start": "node src/app.js",
-    "dev": "nodemon yarn start",
-    "lint": "eslint \"**/*.js\"",
-    "roadster": "node scripts/roadster.js",
-    "orbit": "node scripts/orbits.js",
-    "ships": "node scripts/ships.js"
+    "dev": "nodemon node src/app.js",
+    "pkg": "pkg src/app.js --output spacex-api",
+    "lint": "eslint .",
+    "roadster": "node src/scripts/roadster.js",
+    "orbit": "node src/scripts/orbits.js",
+    "ships": "node src/scripts/ships.js",
+    "upcoming": "node src/scripts/upcoming.js",
+    "launchpad": "node src/scripts/launchpad.js",
+    "landpad": "node src/scripts/landpad.js",
+    "cores": "node src/scripts/cores.js",
+    "capsules": "node src/scripts/capsules.js",
+    "webcast": "node src/scripts/webcast.js"
   },
   "repository": {
     "type": "git",
@@ -24,50 +31,50 @@
     "mongodb",
     "koa"
   ],
-  "author": "Jake Meyer",
+  "author": "Jake Meyer <jakewmeyer@gmail.com>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/r-spacex/SpaceX-API/issues"
   },
   "homepage": "https://github.com/r-spacex/SpaceX-API",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "koa": "^2.5.2",
-    "koa-bodyparser": "^4.2.1",
-    "koa-compress": "^3.0.0",
-    "koa-helmet": "^4.0.0",
+    "cheerio": "^1.0.0-rc.3",
+    "fuzzball": "^1.2.2",
+    "ioredis": "^4.11.1",
+    "koa": "^2.7.0",
+    "koa-helmet": "^4.2.0",
     "koa-is-json": "^1.0.0",
-    "koa-logger": "^3.2.0",
+    "koa-json-mask": "^1.0.0",
     "koa-morgan": "^1.0.1",
-    "koa-redis-cache": "^3.0.1",
     "koa-router": "^7.4.0",
     "koa2-cors": "^2.0.6",
     "lower-case": "^1.1.4",
-    "moment": "^2.22.2",
-    "mongodb": "^3.1.4",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.26",
+    "mongodb": "^3.2.6",
     "path": "^0.12.7",
+    "path-to-regexp": "^3.0.0",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
-    "shelljs": "^0.8.2",
-    "validator": "^10.7.1"
+    "request-promise-native": "^1.0.7",
+    "shelljs": "^0.8.3"
   },
   "devDependencies": {
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^21.22.0",
-    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jest": "^22.7.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-mongodb": "^1.0.0",
-    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-security": "^1.4.0",
-    "jest": "^23.5.0",
-    "nodemon": "^1.18.4",
-    "supertest": "^3.2.0"
+    "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
+    "pkg": "^4.4.0",
+    "supertest": "^4.0.2"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "./test/jest.setup.js"
-  },
-  "engines": {
-    "node": ">=8.x.x"
+    "setupFilesAfterEnv": [
+      "./test/jest.setup.js"
+    ]
   }
 }

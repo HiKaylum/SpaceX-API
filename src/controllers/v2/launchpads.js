@@ -1,13 +1,13 @@
 
-const limit = require('../../builders/limit');
-const project = require('../../builders/project');
+const limit = require('../../lib/query-builder/v2/limit');
+const project = require('../../lib/query-builder/v2/project');
 
 module.exports = {
 
   /**
    * Return all launchpads
    */
-  all: async ctx => {
+  all: async (ctx) => {
     const data = await global.db
       .collection('launchpad')
       .find({})
@@ -20,13 +20,13 @@ module.exports = {
   /**
    * Return specific launchpad
    */
-  specific: async ctx => {
+  specific: async (ctx) => {
     const data = await global.db
       .collection('launchpad')
       .find({ id: ctx.params.pad })
       .project(project(ctx.request.query))
       .toArray();
-    ctx.body = data[0];
+    [ctx.body] = data;
   },
 
 };

@@ -1,17 +1,17 @@
 
-const launchQuery = require('../../builders/query/launch-query');
-const sort = require('../../builders/sort/v2-sort');
-const limit = require('../../builders/limit');
+const find = require('../../lib/query-builder/v2/find');
+const sort = require('../../lib/query-builder/v2/sort');
+const limit = require('../../lib/query-builder/v2/limit');
 
 module.exports = {
 
   /**
    * Returns all payloads
    */
-  all: async ctx => {
+  all: async (ctx) => {
     const data = await global.db
       .collection('launch')
-      .find(launchQuery(ctx.request.query))
+      .find(find(ctx.request))
       .project({ _id: 0, 'rocket.second_stage.payloads': 1, flight_number: 1 })
       .sort(sort(ctx.request))
       .limit(limit(ctx.request.query))
@@ -20,13 +20,13 @@ module.exports = {
     delete ctx.request.query.limit;
     delete ctx.request.query.order;
     delete ctx.request.query.sort;
-    const pretty = ctx.request.query.pretty;
+    const { pretty } = ctx.request.query;
     delete ctx.request.query.pretty;
 
     const payloads = [];
     let match;
-    data.forEach(launch => {
-      launch.rocket.second_stage.payloads.forEach(payload => {
+    data.forEach((launch) => {
+      launch.rocket.second_stage.payloads.forEach((payload) => {
         match = 0;
         if (Object.keys(ctx.request.query).length !== 0) {
           Object.entries(ctx.request.query).forEach(([key, value]) => {
@@ -49,7 +49,7 @@ module.exports = {
   /**
    * Returns single payload
    */
-  one: async ctx => {
+  one: async (ctx) => {
     let payloads;
     const data = await global.db
       .collection('launch')
@@ -58,7 +58,7 @@ module.exports = {
       .limit(limit(ctx.request.query))
       .toArray();
     try {
-      payloads = data[0].rocket.second_stage.payloads;
+      ({ payloads } = data[0].rocket.second_stage);
       let index = 0;
       payloads.forEach((payload, i) => {
         if (payload.payload_id === ctx.params.payload_id) {

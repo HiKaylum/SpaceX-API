@@ -1,15 +1,15 @@
 
-const launchQuery = require('../../builders/query/launch-query');
-const sort = require('../../builders/sort/v2-sort');
-const project = require('../../builders/project');
-const limit = require('../../builders/limit');
+const find = require('../../lib/query-builder/v2/find');
+const sort = require('../../lib/query-builder/v2/sort');
+const project = require('../../lib/query-builder/v2/project');
+const limit = require('../../lib/query-builder/v2/limit');
 
 module.exports = {
 
   /**
    * Return most recent launch
    */
-  latest: async ctx => {
+  latest: async (ctx) => {
     const data = await global.db
       .collection('launch')
       .find({ upcoming: false })
@@ -17,13 +17,13 @@ module.exports = {
       .sort({ flight_number: -1 })
       .limit(1)
       .toArray();
-    ctx.body = data[0];
+    [ctx.body] = data;
   },
 
   /**
    * Return next launch
    */
-  next: async ctx => {
+  next: async (ctx) => {
     const data = await global.db
       .collection('launch')
       .find({ upcoming: true })
@@ -31,16 +31,16 @@ module.exports = {
       .sort({ flight_number: 1 })
       .limit(1)
       .toArray();
-    ctx.body = data[0];
+    [ctx.body] = data;
   },
 
   /**
    * Return all past and upcoming launches
    */
-  all: async ctx => {
+  all: async (ctx) => {
     const data = await global.db
       .collection('launch')
-      .find(launchQuery(ctx.request.query))
+      .find(find(ctx.request))
       .project(project(ctx.request.query))
       .sort(sort(ctx.request))
       .limit(limit(ctx.request.query))
@@ -51,10 +51,10 @@ module.exports = {
   /**
    * Return all past launches filtered by querystrings
    */
-  past: async ctx => {
+  past: async (ctx) => {
     const data = await global.db
       .collection('launch')
-      .find(Object.assign({ upcoming: false }, launchQuery(ctx.request.query)))
+      .find(Object.assign({ upcoming: false }, find(ctx.request)))
       .project(project(ctx.request.query))
       .sort(sort(ctx.request))
       .limit(limit(ctx.request.query))
@@ -65,10 +65,10 @@ module.exports = {
   /**
    * Return upcoming launches filtered by querystrings
    */
-  upcoming: async ctx => {
+  upcoming: async (ctx) => {
     const data = await global.db
       .collection('launch')
-      .find(Object.assign({ upcoming: true }, launchQuery(ctx.request.query)))
+      .find(Object.assign({ upcoming: true }, find(ctx.request)))
       .project(project(ctx.request.query))
       .sort(sort(ctx.request))
       .limit(limit(ctx.request.query))
